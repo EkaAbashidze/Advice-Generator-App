@@ -1,14 +1,17 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Advice = () => {
 
     const URL = "https://api.adviceslip.com/advice";
     const [number, setNumber] = useState(0);
     const [text, setText] = useState("");
+    const hasRunRef = useRef(false);
 
     useEffect(() => {
-        const fetchData = async () => {
+            if (hasRunRef.current) return;
+            hasRunRef.current = true;
+            const fetchData = async () => {
             const result = await fetch(URL);
             result.json().then(json => {
                 setNumber(json.slip.id);
@@ -16,7 +19,9 @@ const Advice = () => {
                 console.log(json.slip.id, json.slip.advice);
             })
         }
-        fetchData();
+        if (text === "") {
+            fetchData()
+        };
     }, [])
 
     const reloadPage = () => {
